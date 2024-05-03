@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
 import Header from "./Header";
 import { ValideData } from "../utils/validate";
+import { auth } from "../utils/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 function Login() {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const toggleForm = () => {
@@ -10,10 +15,52 @@ function Login() {
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
+
   const validateFormData = () => {
-    console.log(ValideData(name, email, password));
-    console.log("Button clicked");
-    setMessage(ValideData(name, email, password));
+    const response = ValideData(
+      name?.current?.value,
+      email.current.value,
+      password.current.value
+    );
+    if (isSignInForm && response === "Name is not valid") setMessage(null);
+    else setMessage(response);
+    if (response === null || response === "Name is not valid") {
+      if (!isSignInForm) {
+        createUserWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        )
+          .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user);
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // ..
+            console.log(errorMessage);
+            setMessage(errorCode + "-" + errorMessage);
+          });
+      } else {
+        signInWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        )
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            // ...
+            console.log(user);
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            setMessage(errorCode + " " + errorMessage);
+          });
+      }
+    }
   };
   return (
     <div>

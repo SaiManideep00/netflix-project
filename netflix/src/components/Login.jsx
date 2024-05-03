@@ -5,13 +5,19 @@ import { auth } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 function Login() {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const toggleForm = () => {
     setIsSignInForm(!isSignInForm);
   };
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
@@ -33,7 +39,29 @@ function Login() {
         )
           .then((userCredential) => {
             const user = userCredential.user;
-            console.log(user);
+            updateProfile(user, {
+              displayName: name.current.value,
+              photoURL:
+                "https://www.pexels.com/photo/gothic-cathedral-sculpture-near-landmark-10796323/",
+            })
+              .then(() => {
+                // Profile updated!
+                // ...
+                navigate("/browse");
+                const { uid, email, displayName, photoURL } = auth.currentUser;
+                dispatch(
+                  addUser({
+                    uid: uid,
+                    email: email,
+                    displayName: displayName,
+                    photoURL: photoURL,
+                  })
+                );
+              })
+              .catch((error) => {
+                // An error occurred
+                // ...
+              });
           })
           .catch((error) => {
             const errorCode = error.code;
@@ -53,6 +81,7 @@ function Login() {
             const user = userCredential.user;
             // ...
             console.log(user);
+            navigate("/browse");
           })
           .catch((error) => {
             const errorCode = error.code;

@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { LOGIN_LOGO } from "../utils/constants";
 function Login() {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const toggleForm = () => {
@@ -95,7 +96,7 @@ function Login() {
     <div>
       <Header />
       <div className="absolute">
-        <img src="https://assets.nflxext.com/ffe/siteui/vlv3/4d7bb476-6d8b-4c49-a8c3-7739fddd135c/53529d7d-a14c-4416-8478-fd7d29361c0d/US-en-20240429-popsignuptwoweeks-perspective_alpha_website_small.jpg" />
+        <img src={LOGIN_LOGO} />
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}

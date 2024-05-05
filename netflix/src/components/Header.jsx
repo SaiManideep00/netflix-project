@@ -1,10 +1,32 @@
-import React from "react";
-import { signOut } from "firebase/auth";
+import React, { useEffect } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "../utils/userSlice";
 function Header() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/browse");
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            //photoURL: photoURL,
+          })
+        );
+      } else {
+        navigate("/");
+        dispatch(removeUser);
+      }
+    });
+  }, []);
+
   const user = useSelector((store) => store.user);
 
   const signOutUser = () => {
@@ -26,8 +48,8 @@ function Header() {
       />
       {user && (
         <div>
-          <img className="w-20 h-20 " src={user?.photoURL}></img>
-          <button className="text-red p-2" onClick={signOutUser}>
+          {/* //<img className="w-20 h-20 " src={user?.photoURL}></img> */}
+          <button className="text-white p-2 font-bold" onClick={signOutUser}>
             Sign Out
           </button>
         </div>

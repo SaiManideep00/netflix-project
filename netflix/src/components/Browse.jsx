@@ -10,7 +10,7 @@ function Browse() {
   useNowPlayingMovies();
   usePopularMovies();
   const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
-  console.log(showGptSearch);
+
   return (
     <div>
       <div>
